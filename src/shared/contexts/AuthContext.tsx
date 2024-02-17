@@ -7,7 +7,6 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { useNavigate } from 'react-router-dom'
 import {
   apiAuth,
   apiUser,
@@ -24,13 +23,11 @@ interface iAuthContextData {
   logout: () => void
   login: (data: iLoginRequest) => Promise<void>
   profileUser: () => void
-  onClickLogout: () => void
 }
 
 const AuthContext = createContext({} as iAuthContextData)
 
 export const AuthProvider = ({ children }: iChildren) => {
-  const navigate = useNavigate()
   const { setLoading, handleSucess, handleError } = useAppThemeContext()
   const [accessToken, setAccessToken] = useState<string>()
   const [userProfile, setUserProfile] = useState<iUser>()
@@ -81,14 +78,6 @@ export const AuthProvider = ({ children }: iChildren) => {
     localStorage.removeItem('@EMTechs:refresh_token')
     setAccessToken(undefined)
     setUserProfile(undefined)
-    navigate('/login')
-  }, [])
-
-  const onClickLogout = useCallback(() => {
-    localStorage.removeItem('@EMTechs:token')
-    localStorage.removeItem('@EMTechs:refresh_token')
-    setAccessToken(undefined)
-    setUserProfile(undefined)
   }, [])
 
   const isAuthenticated = useMemo(() => !!accessToken, [accessToken])
@@ -102,7 +91,6 @@ export const AuthProvider = ({ children }: iChildren) => {
         logout: handleLogout,
         profileUser,
         userProfile,
-        onClickLogout,
       }}
     >
       {children}
