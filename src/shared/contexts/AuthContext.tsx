@@ -24,6 +24,7 @@ interface iAuthContextData {
   logout: () => void
   login: (data: iLoginRequest) => Promise<void>
   profileUser: () => void
+  onClickLogout: () => void
 }
 
 const AuthContext = createContext({} as iAuthContextData)
@@ -83,6 +84,13 @@ export const AuthProvider = ({ children }: iChildren) => {
     navigate('/login')
   }, [])
 
+  const onClickLogout = useCallback(() => {
+    localStorage.removeItem('@EMTechs:token')
+    localStorage.removeItem('@EMTechs:refresh_token')
+    setAccessToken(undefined)
+    setUserProfile(undefined)
+  }, [])
+
   const isAuthenticated = useMemo(() => !!accessToken, [accessToken])
 
   return (
@@ -94,6 +102,7 @@ export const AuthProvider = ({ children }: iChildren) => {
         logout: handleLogout,
         profileUser,
         userProfile,
+        onClickLogout,
       }}
     >
       {children}
