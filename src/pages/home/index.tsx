@@ -18,7 +18,7 @@ import {
 
 export const HomePage = () => {
   const { theme } = useAppThemeContext()
-  const { accessToken, onClickLogout } = useAuthContext()
+  const { accessToken, logout } = useAuthContext()
   return (
     <LayoutDrawer
       title={
@@ -73,7 +73,7 @@ export const HomePage = () => {
                   color="primary"
                   fullWidth
                   size="large"
-                  onClick={onClickLogout}
+                  onClick={logout}
                   href={`${el.url}/token/${accessToken}`}
                 >
                   {el.name}
