@@ -64,7 +64,7 @@ export const HomePage = () => {
             {[
               {
                 name: 'Massapê',
-                url: 'https://emtidigital-massape.emsolucoestecnologicas.com.br',
+                url: 'https://emti-massape-app.vercel.app',
               },
             ].map((el) => (
               <Grid key={el.name} item xs={12} sm={6} md={4}>
