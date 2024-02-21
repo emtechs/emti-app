@@ -22,18 +22,15 @@ const refresh = async (token: string): Promise<iLoginResponse> => {
 }
 
 const recovery = async (data: iRecoveryRequest): Promise<void> => {
-  await apiUsingNow.post('password', {
-    ...data,
-    base_url: 'https://emtidigital.emsolucoestecnologicas.com.br',
-  })
+  await apiUsingNow.post('password', data)
 }
 
 const passwordRecovery = async (
   data: iRecoveryPasswordRequest,
-  userId: string,
+  id: string,
   token: string,
 ): Promise<void> => {
-  await apiUsingNow.post(`password/${userId}/${token}`, data)
+  await apiUsingNow.patch('password', { ...data, id, token })
 }
 
 const verifyPassword = async (

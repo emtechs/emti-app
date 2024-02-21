@@ -2,7 +2,7 @@
 import axios from 'axios'
 import { apiAuth } from '../services'
 
-const baseURL = 'https://auth.emsolucoestecnologicas.com.br/'
+const baseURL = 'https://api.emtidigital.com.br/'
 
 export const apiUsingNow = axios.create({
   baseURL,

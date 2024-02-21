@@ -1,6 +1,6 @@
 import { MouseEvent, useState } from 'react'
 import { Box, Typography, Avatar } from '@mui/material'
-import { AccountCircle } from '@mui/icons-material'
+import { AccountCircle, Settings } from '@mui/icons-material'
 import {
   MenuLayout,
   adaptName,
@@ -13,6 +13,7 @@ export const Header = () => {
   const { userProfile } = useAuthContext()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const [openPerfil, setOpenPerfil] = useState(false)
+  const [openConfig, setOpenConfig] = useState(false)
 
   const handleClickPerfil = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
@@ -22,6 +23,16 @@ export const Header = () => {
   const handleClosePerfil = () => {
     setAnchorEl(null)
     setOpenPerfil(false)
+  }
+
+  const handleClickConfig = (event: MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget)
+    setOpenConfig(true)
+  }
+
+  const handleCloseConfig = () => {
+    setAnchorEl(null)
+    setOpenConfig(false)
   }
 
   const user = {
@@ -44,6 +55,20 @@ export const Header = () => {
             { to: '/profile/edit/password', value: 'Editar Senha' },
           ]}
         />
+        {userProfile?.is_super && (
+          <MenuLayout
+            anchorEl={anchorEl}
+            onClick={handleClickConfig}
+            onClose={handleCloseConfig}
+            open={openConfig}
+            title="Configurações"
+            icon={<Settings fontSize="small" />}
+            options={[
+              { to: '/module', value: 'Módulos' },
+              { to: '/county', value: 'Municípios' },
+            ]}
+          />
+        )}
       </Box>
       <Box display="flex" alignItems="center" gap={1}>
         <Typography>{user.name}</Typography>

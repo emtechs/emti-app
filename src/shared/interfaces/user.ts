@@ -11,6 +11,7 @@ export interface iUser {
   login: string
   cpf: string
   email: string
+  is_super: boolean
   is_first_access: boolean
   profile: {
     url: string
