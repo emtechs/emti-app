@@ -1,10 +1,5 @@
-import {
-  Checklist,
-  Home,
-  ManageAccounts,
-  Quiz,
-  ViewModule,
-} from '@mui/icons-material'
+import { useCallback, useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import {
   Box,
   Breadcrumbs,
@@ -13,28 +8,78 @@ import {
   Divider,
   Grid,
   Paper,
+  Skeleton,
   Typography,
 } from '@mui/material'
 import {
+  Checklist,
+  Home,
+  ManageAccounts,
+  Quiz,
+  ViewModule,
+} from '@mui/icons-material'
+import {
   Footer,
   LayoutDrawer,
+  LinkChip,
+  apiModuleUser,
+  iModuleUser,
   useAppThemeContext,
   useAuthContext,
+  useDataContext,
 } from '../../shared'
 
 export const HomeCountyPage = () => {
-  const { theme } = useAppThemeContext()
-  const { accessToken, userProfile } = useAuthContext()
+  const { county_id } = useParams()
+  const { theme, setLoading } = useAppThemeContext()
+  const { accessToken, userProfile, logout } = useAuthContext()
+  const { countyData, handleCountyData, loadingCounty } = useDataContext()
+  const [modulesData, setModulesData] = useState<iModuleUser[]>([])
+
+  const handleIconModule = useCallback((name: string) => {
+    switch (name) {
+      case 'ADMIN':
+        return <ManageAccounts />
+
+      case 'FREQUÊNCIA':
+        return <Checklist />
+
+      case 'AVALIAÇÕES':
+        return <Quiz />
+    }
+  }, [])
+
+  const handleHref = useCallback(
+    (url: string) => {
+      return `${countyData?.url}/${url}?token=${accessToken}`
+    },
+    [accessToken, countyData],
+  )
+
+  useEffect(() => {
+    if (countyData?.id !== county_id) handleCountyData(county_id || '')
+  }, [countyData, county_id])
+
+  useEffect(() => {
+    setLoading(true)
+    apiModuleUser
+      .list(`?county_id=${county_id}&user_id=${userProfile?.id}`)
+      .then((res) => setModulesData(res.result))
+      .finally(() => setLoading(false))
+  }, [county_id, userProfile])
 
   return (
     <LayoutDrawer
       title={
         <Breadcrumbs aria-label="breadcrumb">
-          <Chip
-            color="primary"
-            variant="filled"
-            label="Página Inicial"
+          <LinkChip
             icon={<Home sx={{ mr: 0.5 }} fontSize="inherit" />}
+            label="Página Inicial"
+          />
+          <Chip
+            label={loadingCounty ? <Skeleton width={100} /> : countyData?.name}
+            color="primary"
+            icon={<ViewModule sx={{ mr: 0.5 }} fontSize="inherit" />}
           />
         </Breadcrumbs>
       }
@@ -68,44 +113,22 @@ export const HomeCountyPage = () => {
         <Divider />
         <Box p={1}>
           <Grid container spacing={2}>
-            {userProfile?.is_super && (
-              <Grid item xs={12} sm={6} md={4}>
+            {modulesData.map((el) => (
+              <Grid key={el.id} item xs={12} sm={6} md={4}>
                 <Button
                   variant="contained"
                   color="primary"
                   fullWidth
                   size="large"
-                  href={`https://massape.admin.emtidigital.com.br/token/${accessToken}`}
-                  startIcon={<ManageAccounts />}
+                  href={handleHref(el.url)}
+                  disabled={!el.is_active}
+                  startIcon={handleIconModule(el.name)}
+                  onClick={logout}
                 >
-                  Admin
+                  {el.name}
                 </Button>
               </Grid>
-            )}
-            <Grid item xs={12} sm={6} md={4}>
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                size="large"
-                href={`https://emtidigital-massape-freq.emsolucoestecnologicas.com.br/token/${accessToken}`}
-                startIcon={<Checklist />}
-              >
-                Frequência
-              </Button>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                size="large"
-                href={`https://emtidigital-massape-ava.emsolucoestecnologicas.com.br/token/${accessToken}`}
-                startIcon={<Quiz />}
-              >
-                Avaliações
-              </Button>
-            </Grid>
+            ))}
           </Grid>
         </Box>
       </Box>
